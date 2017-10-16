@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
+            <code-name-base>br.com.objectware.domain</code-name-base>
+            <suite-component/>
+            <module-dependencies>
+                <dependency>
+                    <code-name-base>br.com.objectware.commons</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>0.1.8</specification-version>
+                    </run-dependency>
+                </dependency>
+            </module-dependencies>
+            <public-packages>
+                <package>br.com.objectware.domain</package>
+                <package>br.com.objectware.domain.enums</package>
+                <package>br.com.objectware.domain.factories</package>
+                <package>br.com.objectware.domain.msx.sprite</package>
+                <package>br.com.objectware.domain.sprite</package>
+            </public-packages>
+        </data>
+    </configuration>
+</project>

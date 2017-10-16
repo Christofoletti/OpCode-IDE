@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: br.com.objectware.ioutils
+OpenIDE-Module-Localizing-Bundle: br/com/objectware/ioutils/Bundle.properties
+OpenIDE-Module-Specification-Version: 0.1.5
+

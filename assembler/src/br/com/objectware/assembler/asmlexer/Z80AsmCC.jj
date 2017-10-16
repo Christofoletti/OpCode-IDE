@@ -1,0 +1,416 @@
+/* 
+ * Z80 Assembly lexer rules - version 1.1
+ * Date: 04/feb/2016
+ *  
+ * Copyright (c) 2016, Objectware Br
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+options {
+    JAVA_UNICODE_ESCAPE = true;
+    IGNORE_CASE = true;
+    ERROR_REPORTING = false;
+    STATIC = false;
+    COMMON_TOKEN_ACTION = false;
+    TOKEN_FACTORY = "Token";
+    JDK_VERSION = "1.7";
+}   
+
+PARSER_BEGIN(ASMParser)
+
+package br.com.objectware.assembler.asmlexer;
+
+public class ASMParser {}
+
+PARSER_END(ASMParser)
+
+/**********************************************
+ * THE JAVACC TOKEN SPECIFICATION STARTS HERE *
+ **********************************************/
+
+/*
+ * The remainder of the tokens are exactly (except for the removal of tokens
+ * containing ">>" and "<<") as in the Java grammar and must be diff equivalent
+ * (again with the exceptions above) to it.
+ */
+
+/* WHITE SPACE */
+
+SKIP:
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+
+MORE:
+{
+  ";" : IN_SINGLE_LINE_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+TOKEN:
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+TOKEN:
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT, IN_MULTI_LINE_COMMENT>
+MORE:
+{
+  < ~[] >
+}
+
+/* ASSEMBLY RESERVED WORDS AND LITERALS */
+
+// Z80 registers set
+TOKEN:
+{
+  < A: "a" >
+| < B: "b" >
+| < C: "c" >
+| < D: "d" >
+| < E: "e" >
+| < H: "h" >
+| < L: "l" >
+| < I: "i" >
+| < R: "r" >
+| < AF: "af" >
+| < BC: "bc" >
+| < DE: "de" >
+| < HL: "hl" >
+| < IX: "ix" >
+| < IY: "iy" >
+| < SP: "sp" >
+| < IXH: "ixh" >
+| < IXL: "ixl" >
+| < IYH: "iyh" >
+| < IYL: "iyl" >
+}
+
+// Z80 flags set
+TOKEN:
+{
+// < C: "c" > // conflicts with c register
+  < M: "m" >
+| < NC: "nc" >
+| < NZ: "nz" >
+| < P: "p" >
+| < PE: "pe" >
+| < PO: "po" >
+| < Z: "z" >
+}
+
+// Z80 mnemonics set
+TOKEN:
+{
+  < ADC: "adc" >
+| < ADD: "add" >
+| < AND: "and" >
+| < BIT: "bit" >
+| < BYTE: "byte" >
+| < CALL: "call" >
+| < CCF: "ccf" >
+| < CP: "cp" >
+| < CPD: "cpd" >
+| < CPDR: "cpdr" >
+| < CPI: "cpi" >
+| < CPIR: "cpir" >
+| < CPL: "cpl" >
+| < DAA: "daa" >
+| < DEC: "dec" >
+| < DI: "di" >
+| < DJNZ: "djnz" >
+| < EI: "ei" >
+| < EX: "ex" >
+| < EXX: "exx" >
+| < HALT: "halt" >
+| < IM: "im" >
+| < IN: "in" >
+| < INC: "inc" >
+| < IND: "ind" >
+| < INDR: "indr" >
+| < INI: "ini" >
+| < INIR: "inir" >
+| < JP: "jp" >
+| < JR: "jr" >
+| < LD: "ld" >
+| < LDD: "ldd" >
+| < LDDR: "lddr" >
+| < LDI: "ldi" >
+| < LDIR: "ldir" >
+| < NEG: "neg" >
+| < NOP: "nop" >
+| < OR: "or" >
+| < OTDR: "otdr" >
+| < OTIR: "otir" >
+| < OUT: "out" >
+| < OUTD: "outd" >
+| < OUTI: "outi" >
+| < POP: "pop" >
+| < PUSH: "push" >
+| < RES: "res" >
+| < RET: "ret" >
+| < RETI: "reti" >
+| < RETN: "retn" >
+| < RL: "rl" >
+| < RLA: "rla" >
+| < RLC: "rlc" >
+| < RLCA: "rlca" >
+| < RLD: "rld" >
+| < RR: "rr" >
+| < RRA: "rra" >
+| < RRC: "rrc" >
+| < RRCA: "rrca" >
+| < RRD: "rrd" >
+| < RST: "rst" >
+| < SBC: "sbc" >
+| < SCF: "scf" >
+| < SET: "set" >
+| < SLA: "sla" >
+| < SLL: "sll" >
+| < SRA: "sra" >
+| < SRL: "srl" >
+| < SUB: "sub" >
+| < XOR: "xor" >
+}
+
+
+// General compiler directives reserved words
+TOKEN:
+{
+  < IF: "if" >
+| < DB: "db" >
+| < DS: "ds" >
+| < DW: "dw" >
+| < END: "end" >
+| < EQU: "equ" >
+| < ORG: "org" >
+| < DEFB: "defb" >
+| < DEFW: "defw" >
+| < ELSE: "else" >
+| < ENDIF: "endif" >
+| < DEFINE: "define" >
+| < INCBIN: "incbin" >
+| < INCSRC: "incsrc" >
+| < INCLUDE: "include" >
+}
+
+// Glass specific compiler processor directives
+TOKEN:
+{
+  < ONCE: "once" >
+| < REPT: "rept" >
+| < ENDR: "endr" >
+| < PROC: "proc" >
+| < ENDP: "endp" >
+| < ENDM: "endm" >
+| < MACRO: "macro" >
+| < SECTION: "section" >
+}
+
+// Sepatator chars
+TOKEN:
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < COMMA: "," >
+| < DOT: "." >
+}
+
+// Operator chars
+TOKEN :
+{
+  < ASSIGN: "=" >
+| < GT: ">" >
+| < LT: "<" >
+| < BANG: "!" >
+| < TILDE: "~" >
+| < HOOK: "?" >
+| < COLON: ":" >
+| < EQ: "==" >
+| < LE: "<=" >
+| < GE: ">=" >
+| < NE: "!=" >
+| < SC_OR: "||" >
+| < SC_AND: "&&" >
+| < INCR: "++" >
+| < DECR: "--" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < STAR: "*" >
+| < SLASH: "/" >
+| < BIT_AND: "&" >
+| < BIT_OR: "|" >
+| < BIT_XOR: "^" >
+| < REM: "%" >
+}
+
+// Easter tokens ;P
+TOKEN:
+{
+  < BR: "br" >
+| < OBJECTWARE: "objectware" >
+}
+
+/* ASM literals */
+TOKEN :
+{
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+      | <BINARY_LITERAL> (["l", "L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL:
+        "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+
+      | "$" (["0"-"9", "a"-"f", "A"-"F"])+
+      | "#" (["0"-"9", "a"-"f", "A"-"F"])+
+      | (["0"-"9"])+ (["0"-"9","a"-"f","A"-"F"])* ["h", "H"]
+  >
+|
+  < #OCTAL_LITERAL:
+        "0" (["0"-"7"])* 
+      | (["0"-"7"])+ ["o", "O"]
+  >
+|
+  < #BINARY_LITERAL: (["0"-"1"])+ ["b", "B"] >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+/* Identifiers */
+TOKEN:
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < LABEL: <LETTER> (<LETTER>|<DIGIT>)* ":" >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u002e",
+       "\u0040"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+TOKEN :
+{
+  < ERROR: ([
+        "\u0000"-"\u001F",
+        "\"",
+        "#",
+        "\'",
+        "\\",
+        "\u0060",
+        "\u0080"-"\u00FF"
+    ])+
+  >
+}
